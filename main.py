@@ -7,7 +7,7 @@ import google.generativeai as genai
 
 # Configure Gemini
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 # Initialize the database
 conn = sqlite3.connect('orion_memory.db', check_same_thread=False)
