@@ -119,12 +119,6 @@ async def start():
     config   = design_configs.get(username, {"bot_name": "Orion", "emoji": "🤖", "welcome_color": "gray"})
     bot_name = config["bot_name"]
     cl.user_session.set("bot_name", bot_name)
-
-    await cl.Avatar(
-        name=bot_name,
-        url=f"https://api.dicebear.com/7.x/bottts/svg?seed={bot_name}&backgroundColor={config['welcome_color']}"
-    ).send()
-
     if username == "JJ":
         cursor.execute('SELECT username, user_fact FROM memory')
         all_facts = cursor.fetchall()
