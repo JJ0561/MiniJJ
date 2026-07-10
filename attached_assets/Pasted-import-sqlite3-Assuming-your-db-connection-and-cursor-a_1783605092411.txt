@@ -1,0 +1,51 @@
+import sqlite3
+
+# (Assuming your db connection and cursor are already set up at the top of your file)
+
+@cl.on_chat_start
+async def start():
+    # 1. Identify who just logged in
+    user = cl.user_session.get("user")
+    username = user.identifier
+    cl.user_session.set("username", username)
+    
+    # 2. Dynamic Routing: Master Admin vs. Regular User
+    if username == "JJ":
+        # Pull the ENTIRE database
+        cursor.execute('SELECT username, user_fact FROM memory')
+        all_facts = cursor.fetchall()
+        
+        # Build the God-Mode System Prompt
+        system_instruction = "You are JJ's Master Assistant. You have full read/write access to the entire family's database.\n"
+        if all_facts:
+            system_instruction += "Here is the current family database context:\n"
+            for fact in all_facts:
+                system_instruction += f"- {fact[0]}'s data: {fact[1]}\n"
+        
+        # Initialize JJ's history
+        cl.user_session.set("history", [
+            {"role": "user", "parts": [system_instruction]},
+            {"role": "model", "parts": ["Master privileges acknowledged. I am ready to manage the family fleet."]}
+        ])
+        
+        await cl.Message(content=f"Welcome back, Commander **{username}**. Master access granted. I can see the whole family's data.").send()
+
+    else:
+        # Regular User: Pull ONLY their database rows
+        cursor.execute('SELECT user_fact FROM memory WHERE username = ?', (username,))
+        user_facts = cursor.fetchall()
+        
+        # Build the Sandboxed System Prompt
+        system_instruction = f"You are {username}'s personal assistant. You only know facts about them.\n"
+        if user_facts:
+            system_instruction += "Here is your memory bank regarding this user:\n"
+            for fact in user_facts:
+                system_instruction += f"- {fact[0]}\n"
+                
+        # Initialize Regular User's history
+        cl.user_session.set("history", [
+            {"role": "user", "parts": [system_instruction]},
+            {"role": "model", "parts": [f"Ready to assist {username}."]}
+        ])
+        
+        await cl.Message(content=f"Welcome back, **{username}**. Orion is online and locked to your profile.").send()

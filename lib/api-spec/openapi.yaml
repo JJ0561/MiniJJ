@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: board
+    description: Family noticeboard operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /board:
+    get:
+      operationId: getBoardMessages
+      tags: [board]
+      summary: Get family board messages
+      description: Returns all messages on the shared family noticeboard
+      responses:
+        "200":
+          description: List of board messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BoardMessage"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    BoardMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+        author:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+      required:
+        - id
+        - author
+        - message
+        - timestamp
